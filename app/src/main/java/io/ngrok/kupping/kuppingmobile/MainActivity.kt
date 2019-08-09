@@ -12,12 +12,12 @@ import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Button
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
-import org.json.JSONObject
+import io.ngrok.kupping.kuppingmobile.models.LoginModel
+import io.ngrok.kupping.kuppingmobile.services.LoginApiService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var properties: Properties
@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         properties = Properties.instance
     }
+    private val loginApiService by lazy {
+        LoginApiService.create()
+    }
+    var disposable: Disposable? = null
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -52,7 +56,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             super.onBackPressed()
         }
     }
-
+    override fun onPause() {
+        super.onPause()
+        disposable?.dispose()
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
@@ -101,22 +108,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
     private fun login(username: String, password: String){
-        val params = HashMap<String,String>()
-        params["username"] = username
-        params["password"] = password
-        val jsonObject = JSONObject(params as Map<String, String>)
-        val queue = Volley.newRequestQueue(this)
-        val stringRequest = JsonObjectRequest(
-            Request.Method.POST, properties.url+"auth/login",jsonObject,
-            Response.Listener { response ->
-                // Display the first 500 characters of the response string.
-                Toast.makeText(applicationContext, response.toString(), Toast.LENGTH_LONG).show()
-                properties.token = response.toString()
-            },
-            Response.ErrorListener {
-                Toast.makeText(applicationContext,"That didn't work!",Toast.LENGTH_LONG).show()
-                properties.token = ""
-            })
-        queue.add(stringRequest)
+        val loginModel = LoginModel(username,password)
+        disposable =
+            loginApiService.login(loginModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> showResult(result.token) },
+                    { error -> showError(error.message) }
+                )
+    }
+    private fun showResult(token: String){
+        Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
+        properties.token = token
+    }
+    private fun showError(message: String?) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 }

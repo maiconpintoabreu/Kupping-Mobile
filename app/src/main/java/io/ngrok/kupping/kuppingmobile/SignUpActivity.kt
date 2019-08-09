@@ -2,8 +2,6 @@ package io.ngrok.kupping.kuppingmobile
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
 import android.view.MenuItem
@@ -15,12 +13,12 @@ import android.view.Menu
 import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.google.android.material.textfield.TextInputEditText
-import org.json.JSONObject
+import io.ngrok.kupping.kuppingmobile.models.SignUpModel
+import io.ngrok.kupping.kuppingmobile.services.LoginApiService
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 
 class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var properties: Properties
@@ -107,27 +105,31 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
+
+    private val loginApiService by lazy {
+        LoginApiService.create()
+    }
+    var disposable: Disposable? = null
+    override fun onPause() {
+        super.onPause()
+        disposable?.dispose()
+    }
     private fun signUp(username: String, password: String, company: String, email: String, organizer: Boolean, student: Boolean){
-        val params = HashMap<String,Any>()
-        params["username"] = username
-        params["password"] = password
-        params["company"] = company
-        params["email"] = email
-        params["organizer"] = organizer
-        params["student"] = student
-        val jsonObject = JSONObject(params as Map<String, Any>)
-        val queue = Volley.newRequestQueue(this)
-        val stringRequest = JsonObjectRequest(
-            Request.Method.POST, properties.url+"auth/signup",jsonObject,
-            Response.Listener { response ->
-                // Display the first 500 characters of the response string.
-                Toast.makeText(applicationContext, response.toString(), Toast.LENGTH_LONG).show()
-                properties.token = response.toString()
-            },
-            Response.ErrorListener {
-                Toast.makeText(applicationContext,"That didn't work!", Toast.LENGTH_LONG).show()
-                properties.token = ""
-            })
-        queue.add(stringRequest)
+        val signUpModel = SignUpModel(username,password,company,email,organizer,student)
+        disposable =
+            loginApiService.signUp(signUpModel)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> showResult(result.token) },
+                    { error -> showError(error.message) }
+                )
+    }
+    private fun showResult(token: String){
+        Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
+        properties.token = token
+    }
+    private fun showError(message: String?) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 }
