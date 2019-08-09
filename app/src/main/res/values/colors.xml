@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+    <color name="color_log_in">#FFFFFFFF</color>
+    <color name="color_sign_up">#FFFFFFFF</color>
+
+
+    <color name="color_logo_log_in">#000000</color>
+    <color name="color_logo_sign_up">#000000</color>
+
+    <color name="color_label">#000000</color>
+    <color name="white_transparent">#0a0a0a</color>
+
+    <color name="color_input_hint">#000</color>
+    <color name="color_text_highlight">#0a0a0a</color>
+    <color name="color_text">#000</color>
+</resources>
