@@ -14,14 +14,16 @@ import android.widget.Button
 import android.widget.Switch
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
+import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.SignUpModel
-import io.ngrok.kupping.kuppingmobile.services.LoginApiService
+import io.ngrok.kupping.kuppingmobile.services.IAMApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
     private lateinit var properties: Properties
+    private lateinit var navView: NavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -29,7 +31,7 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        navView = findViewById(R.id.nav_view)
         val toggle = ActionBarDrawerToggle(
             this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
@@ -54,6 +56,10 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 studentSwitch.isChecked)
         }
         properties = Properties.instance
+        if(properties.token.isNotBlank()){
+            navView.menu.clear()
+            navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        }
     }
 
     override fun onBackPressed() {
@@ -83,31 +89,14 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_login -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            R.id.nav_sign_up -> {
-               //clear
-            }
-            R.id.nav_camera -> {
-                val intent = Intent(this, CameraQRActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            R.id.nav_student -> {
-
-            }
-        }
+        getActivity(item.itemId,this)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
     private val loginApiService by lazy {
-        LoginApiService.create()
+        IAMApiService.create()
     }
     var disposable: Disposable? = null
     override fun onPause() {
@@ -128,6 +117,8 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     private fun showResult(token: String){
         Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
         properties.token = token
+        navView.menu.clear()
+        navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
     }
     private fun showError(message: String?) {
         Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()

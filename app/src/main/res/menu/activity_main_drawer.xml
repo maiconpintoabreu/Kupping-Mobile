@@ -14,17 +14,4 @@
                 android:title="@string/menu_sign_up"/>
     </group>
 
-    <item android:title="@string/controls">
-        <menu>
-            <item
-                    android:id="@+id/nav_camera"
-                    android:icon="@drawable/ic_menu_camera"
-                    android:title="@string/menu_camera_qr"/>
-            <item
-                    android:id="@+id/nav_student"
-                    android:icon="@drawable/ic_menu_student"
-                    android:title="@string/menu_students"/>
-        </menu>
-    </item>
-
 </menu>

@@ -2,7 +2,9 @@ package io.ngrok.kupping.kuppingmobile
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import android.view.MenuItem
@@ -12,17 +14,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
 import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
+import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import kotlinx.android.synthetic.main.content_camera_qr.*
 
-class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
 
     private var isTorch = false
-
+    var found = false
+    private lateinit var properties: Properties
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_camera_qr)
@@ -43,6 +48,11 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             arrayOf(Manifest.permission.CAMERA),100)
 
         barcode_view.decodeContinuous(callback)
+        properties = Properties.instance
+        if(properties.token.isNotBlank()){
+            navView.menu.clear()
+            navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        }
     }
 
     override fun onBackPressed() {
@@ -72,24 +82,7 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_login -> {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            R.id.nav_sign_up -> {
-                val intent = Intent(this, SignUpActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            R.id.nav_camera -> {
-
-            }
-            R.id.nav_student -> {
-
-            }
-        }
+        getActivity(item.itemId,this)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
@@ -114,6 +107,38 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
             if (result!!.text != null){
                 val resultTextView: TextView = findViewById(R.id.result)
                 resultTextView.text = result.text.toString()
+                // Initialize a new instance of
+                val builder = AlertDialog.Builder(this@CameraQRActivity)
+
+                // Set the alert dialog title
+                builder.setTitle("Student: " + result.text.toString())
+
+                // Display a message on alert dialog
+                builder.setMessage("Class: " + " Test")
+
+                // Set a positive button and its click listener on alert dialog
+                builder.setPositiveButton("Check in") { _, _ ->
+                    // Do something when user press the positive button
+                    Toast.makeText(applicationContext, "Ok.", Toast.LENGTH_SHORT).show()
+                    found = false
+                }
+
+                // Display a neutral button on alert dialog
+                builder.setNeutralButton("Cancel") { _, _ ->
+                    Toast.makeText(applicationContext, "You cancelled the dialog.", Toast.LENGTH_SHORT).show()
+                    found = false
+                }
+                builder.setOnCancelListener{
+                    found = false
+                }
+
+                // Finally, make the alert dialog using builder
+                val dialog: AlertDialog = builder.create()
+                if(!found) {
+                    found = true
+                    // Display the alert dialog on app interface
+                    dialog.show()
+                }
             }
         }
 

@@ -13,14 +13,16 @@ import android.view.Menu
 import android.widget.Button
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
+import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.LoginModel
-import io.ngrok.kupping.kuppingmobile.services.LoginApiService
+import io.ngrok.kupping.kuppingmobile.services.IAMApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
     private lateinit var properties: Properties
+    private lateinit var navView: NavigationView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
+        navView = findViewById(R.id.nav_view)
         val usernameTextInputEditText: TextInputEditText = findViewById(R.id.login_username_input_edit)
         val passwordTextInputEditText: TextInputEditText = findViewById(R.id.login_password_input_edit)
         val toggle = ActionBarDrawerToggle(
@@ -43,11 +45,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             login(usernameTextInputEditText.text.toString(),passwordTextInputEditText.text.toString())
         }
         properties = Properties.instance
+        if(properties.token.isNotBlank()){
+            navView.menu.clear()
+            navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        }
     }
     private val loginApiService by lazy {
-        LoginApiService.create()
+        IAMApiService.create()
     }
-    var disposable: Disposable? = null
+    private var disposable: Disposable? = null
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -78,31 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_login -> {
-                // clear
-            }
-            R.id.nav_sign_up -> {
-                val intent = Intent(this, SignUpActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
-            R.id.nav_camera -> {
-                if(properties.token.isNotBlank()) {
-                    val intent = Intent(this, CameraQRActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent)
-                }else{
-                    Toast.makeText(applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
-                }
-            }
-            R.id.nav_student -> {
-                if(properties.token.isNotBlank()) {
-                }else{
-                    Toast.makeText(applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
-                }
-            }
-        }
+        getActivity(item.itemId,this)
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
@@ -121,6 +103,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun showResult(token: String){
         Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
         properties.token = token
+        navView.menu.clear()
+        navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
     }
     private fun showError(message: String?) {
         Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
