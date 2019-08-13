@@ -30,7 +30,9 @@
     <string name="confirm_hint">Confirm Password</string>
     <string name="title_activity_camera_qr">CameraQRActivity</string>
     <string name="controls">Controls</string>
+    <string name="menu_dance_classes">Dance Classes</string>
+    <string name="title_event_list">Events</string>
+    <string name="title_event_detail">Event Detail</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

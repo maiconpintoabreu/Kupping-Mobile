@@ -1,24 +1,23 @@
 package io.ngrok.kupping.kuppingmobile.services
 
 import io.ngrok.kupping.kuppingmobile.Properties
-import io.ngrok.kupping.kuppingmobile.models.LoginModel
-import io.ngrok.kupping.kuppingmobile.models.SignUpModel
+import io.ngrok.kupping.kuppingmobile.models.EventModel
+import io.ngrok.kupping.kuppingmobile.models.EventWithStudentsModel
 import io.reactivex.Observable
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
-object ResponseDanceClassModel {
-    data class Result(val token: String)
-}
+import retrofit2.http.*
+
 interface DanceClassApiService {
 
     @GET("private/danceclass")
-    fun danceClasses(@Body body:  LoginModel,@Header("Authorization") token: String):
-            Observable<ResponseDanceClassModel.Result>
+    fun danceClasses(@Header("Authorization") authorization: String):
+            Observable<List<EventModel>>
+
+    @GET("private/danceclass/{id}")
+    fun danceClass(@Header("Authorization") token: String,@Path("id") id: String):
+            Observable<EventWithStudentsModel>
 
     companion object {
         fun create(): DanceClassApiService {

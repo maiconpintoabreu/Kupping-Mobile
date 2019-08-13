@@ -1,6 +1,5 @@
 package io.ngrok.kupping.kuppingmobile
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle

@@ -35,11 +35,16 @@ interface NavigationViewAdaptor {
                     Toast.makeText(context.applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
                 }
             }
-            R.id.nav_student -> {
-                if(properties.token.isNotBlank()) {
-                }else{
-                    Toast.makeText(context.applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
-                }
+//            R.id.nav_student -> {
+//                if(properties.token.isNotBlank()) {
+//                }else{
+//                    Toast.makeText(context.applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
+//                }
+//            }
+            R.id.nav_dance_class -> {
+                val intent = Intent(context, EventListActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                context.startActivity(intent)
             }
         }
     }

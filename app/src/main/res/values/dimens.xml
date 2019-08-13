@@ -19,4 +19,7 @@
     <dimen name="folded_label_padding">22sp</dimen>
     <dimen name="logo_size">120dp</dimen>
     <dimen name="guideline_margin">56dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="item_width">200dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>

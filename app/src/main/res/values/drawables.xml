@@ -8,5 +8,6 @@
     <item name="ic_menu_login" type="drawable">@android:drawable/ic_lock_lock</item>
     <item name="ic_menu_logout" type="drawable">@android:drawable/ic_delete</item>
     <item name="ic_menu_sign_up" type="drawable">@android:drawable/ic_menu_add</item>
-    <item name="ic_menu_student" type="drawable">@android:drawable/ic_info</item>
+    <item name="ic_menu_student" type="drawable">@android:drawable/ic_dialog_info</item>
+    <item name="ic_menu_dance_class" type="drawable">@android:drawable/ic_dialog_info</item>
 </resources>
