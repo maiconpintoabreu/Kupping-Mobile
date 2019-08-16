@@ -1,5 +1,6 @@
 package io.ngrok.kupping.kuppingmobile
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
@@ -18,10 +20,12 @@ import io.ngrok.kupping.kuppingmobile.services.IAMApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
     private lateinit var properties: Properties
     private lateinit var navView: NavigationView
+    private lateinit var loginBar: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,7 +51,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if(properties.token.isNotBlank()){
             navView.menu.clear()
             navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+            val intent = Intent(this, EventListActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                    Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
         }
+        loginBar = findViewById(R.id.login_bar)
+        loginBar.visibility = ProgressBar.GONE
     }
     private val loginApiService by lazy {
         IAMApiService.create()
@@ -90,6 +101,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     private fun login(username: String, password: String){
         val loginModel = LoginModel(username,password)
+        loginBar.visibility = ProgressBar.VISIBLE
         disposable =
             loginApiService.login(loginModel)
                 .subscribeOn(Schedulers.io())
@@ -100,12 +112,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 )
     }
     private fun showResult(token: String){
+        loginBar.visibility = ProgressBar.GONE
         Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
         properties.token = token
         navView.menu.clear()
         navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        val intent = Intent(this, EventListActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
     private fun showError(message: String?) {
+        loginBar.visibility = ProgressBar.GONE
         Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 }

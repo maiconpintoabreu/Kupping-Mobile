@@ -78,20 +78,11 @@
                     android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <Switch
-                android:text="@string/student_hint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/password_input"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/student"/>
         <Switch
                 android:text="@string/organizer_hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/student"
+                app:layout_constraintTop_toBottomOf="@+id/password_input"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:id="@+id/organizer"/>
@@ -120,7 +111,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/company_input"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:id="@+id/btn_sign_up"
+                android:id="@+id/btn_sign_up"></Button>
+
+        <ProgressBar
+                android:id="@+id/login_bar"
+                app:layout_constraintTop_toBottomOf="@+id/company_input"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
         />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

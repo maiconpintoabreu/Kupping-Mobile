@@ -27,6 +27,11 @@
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <ProgressBar
+                android:id="@+id/event_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+        />
         <include layout="@layout/event_list"/>
     </FrameLayout>
 

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import io.ngrok.kupping.kuppingmobile.models.EventModel
 import io.ngrok.kupping.kuppingmobile.models.EventWithStudentsModel
@@ -13,6 +14,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_event_detail.*
+import kotlinx.android.synthetic.main.app_bar_event_list.*
 import kotlinx.android.synthetic.main.event_detail.*
 import kotlinx.android.synthetic.main.event_detail.view.*
 import kotlinx.android.synthetic.main.event_detail.view.event_detail
@@ -20,7 +22,7 @@ import kotlinx.android.synthetic.main.event_detail.view.event_detail
 class EventDetailFragment : Fragment() {
 
     private lateinit var item: EventWithStudentsModel
-
+    private lateinit var bar: ProgressBar
 
     private val danceClassApiService by lazy {
         DanceClassApiService.create()
@@ -29,12 +31,9 @@ class EventDetailFragment : Fragment() {
         super.onPause()
         disposable?.dispose()
     }
-
-    override fun onResume() {
-        super.onResume()
-    }
     private var disposable: Disposable? = null
     private fun getEvent(id: String?){
+        bar.visibility = ProgressBar.VISIBLE
         if(id!!.isNotBlank())
         disposable =
             danceClassApiService.danceClass("Bearer "+Properties.instance.token,id)
@@ -51,18 +50,19 @@ class EventDetailFragment : Fragment() {
         item.let {
             event_detail.text = item.about
         }
+        bar.visibility = ProgressBar.GONE
     }
     private fun showError(message: String?) {
+        bar.visibility = ProgressBar.GONE
         Toast.makeText(this.context, message, Toast.LENGTH_LONG).show()
     }
-
+    private var id:String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         arguments?.let {
             if (it.containsKey(ARG_ITEM_ID)) {
-
-                getEvent(it.getString(ARG_ITEM_ID))
+                id = it.getString(ARG_ITEM_ID)
             }
         }
     }
@@ -71,7 +71,10 @@ class EventDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.event_detail, container, false)
+        var view = inflater.inflate(R.layout.event_detail, container, false)
+        bar = view.findViewById(R.id.event_detail_bar)
+        getEvent(id)
+        return view
     }
 
     companion object {

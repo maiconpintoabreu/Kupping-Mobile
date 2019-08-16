@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Switch
 import android.widget.Toast
 import com.google.android.material.textfield.TextInputEditText
@@ -24,6 +25,7 @@ import io.reactivex.schedulers.Schedulers
 class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
     private lateinit var properties: Properties
     private lateinit var navView: NavigationView
+    private lateinit var loginBar: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
@@ -45,7 +47,6 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
         val emailTextInputEditText: TextInputEditText = findViewById(R.id.email_input_edit)
         val companyTextInputEditText: TextInputEditText = findViewById(R.id.company_input_edit)
         val organizerSwitch: Switch = findViewById(R.id.organizer)
-        val studentSwitch: Switch = findViewById(R.id.student)
         btnLogin.setOnClickListener {
             signUp(
                 usernameTextInputEditText.text.toString(),
@@ -53,13 +54,15 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 companyTextInputEditText.text.toString(),
                 emailTextInputEditText.text.toString(),
                 organizerSwitch.isChecked,
-                studentSwitch.isChecked)
+                true)
         }
         properties = Properties.instance
         if(properties.token.isNotBlank()){
             navView.menu.clear()
             navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
         }
+        loginBar = findViewById(R.id.login_bar)
+        loginBar.visibility = ProgressBar.GONE
     }
 
     override fun onBackPressed() {
@@ -105,6 +108,7 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
     }
     private fun signUp(username: String, password: String, company: String, email: String, organizer: Boolean, student: Boolean){
         val signUpModel = SignUpModel(username,password,company,email,organizer,student)
+        loginBar.visibility = ProgressBar.VISIBLE
         disposable =
             loginApiService.signUp(signUpModel)
                 .subscribeOn(Schedulers.io())
@@ -115,12 +119,19 @@ class SignUpActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelec
                 )
     }
     private fun showResult(token: String){
+        loginBar.visibility = ProgressBar.GONE
         Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
         properties.token = token
         navView.menu.clear()
         navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
+        val intent = Intent(this, EventListActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
     }
     private fun showError(message: String?) {
+        loginBar.visibility = ProgressBar.GONE
         Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 }

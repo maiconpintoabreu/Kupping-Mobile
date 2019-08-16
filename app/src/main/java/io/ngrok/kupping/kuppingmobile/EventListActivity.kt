@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -107,6 +108,7 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
     private var disposable: Disposable? = null
     private fun getEvents(){
+        event_bar.visibility = ProgressBar.VISIBLE
         disposable =
             danceClassApiService.danceClasses("Bearer "+properties.token)
                 .subscribeOn(Schedulers.io())
@@ -117,13 +119,14 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                 )
     }
     private fun showResult(eventList: List<EventModel>){
-
         this.eventList = eventList
         setupRecyclerView(event_list)
+        event_bar.visibility = ProgressBar.GONE
     }
     private fun showError(message: String?) {
         Log.e("Connection ERROR",message)
         Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        event_bar.visibility = ProgressBar.GONE
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
