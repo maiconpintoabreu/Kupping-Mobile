@@ -28,15 +28,15 @@ interface NavigationViewAdaptor {
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 context.startActivity(intent)
             }
-            R.id.nav_camera -> {
-                if(properties.token.isNotBlank()) {
-                    val intent = Intent(context, CameraQRActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    context.startActivity(intent)
-                }else{
-                    Toast.makeText(context.applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
-                }
-            }
+//            R.id.nav_camera -> {
+//                if(properties.token.isNotBlank()) {
+//                    val intent = Intent(context, CameraQRActivity::class.java)
+//                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//                    context.startActivity(intent)
+//                }else{
+//                    Toast.makeText(context.applicationContext, "To open the camera you need to be log in", Toast.LENGTH_LONG).show()
+//                }
+//            }
 //            R.id.nav_student -> {
 //                if(properties.token.isNotBlank()) {
 //                }else{

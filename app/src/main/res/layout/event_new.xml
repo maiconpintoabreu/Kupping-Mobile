@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/event_new_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".EventNewFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="0dp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/date_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/guideline"
+        >
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/start_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_width="160dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/start_barrier"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/start_input_edit"
+                style="@style/Widget.TextEdit"
+                android:layout_width="match_parent"
+                android:hint="@string/start_hint"
+                android:inputType="date" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/start_from_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_width="160dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toEndOf="@+id/start_barrier"
+            app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/start_from_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/start_from_hint"
+                android:inputType="time" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/finish_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_width="160dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/start_barrier"
+            app:layout_constraintTop_toBottomOf="@+id/start_input">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/finish_input_edit"
+                style="@style/Widget.TextEdit"
+                android:layout_width="match_parent"
+                android:hint="@string/finish_hint"
+                android:inputType="date" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/finish_to_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_width="160dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toEndOf="@+id/start_barrier"
+            app:layout_constraintTop_toBottomOf="@+id/start_from_input">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/finish_to_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/finish_to_hint"
+                android:inputType="time" />
+    </com.google.android.material.textfield.TextInputLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/name_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/date_box"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/name_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/name_hint"
+                android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/style_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name_input"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/style_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/style_hint"
+                android:inputType="textAutoComplete" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/about_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/style_input"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/about_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/about_hint"
+                android:inputType="textLongMessage" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <TextView
+            android:id="@+id/place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/place_hint"
+            style="@style/Widget.TextEdit"
+            app:layout_constraintTop_toBottomOf="@+id/about_input">
+
+    </TextView>
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/zip_code_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/place"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/zip_code_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/zip_code_hint"
+                android:inputType="textCapWords" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/country_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/zip_code_input"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/country_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/country_hint"
+                android:inputType="textAutoCorrect" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/city_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/country_input"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/city_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/city_hint"
+                android:inputType="textAutoCorrect" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/address_input"
+            style="@style/Widget.TextInputLayout"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/city_input"
+            app:passwordToggleTint="@color/color_input_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/address_input_edit"
+                style="@style/Widget.TextEdit"
+                android:hint="@string/address_hint"
+                android:inputType="textPostalAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ProgressBar
+            android:id="@+id/save_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/address_input" />
+
+    <Button
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:text="@string/create_event"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/save_bar" />
+</androidx.constraintlayout.widget.ConstraintLayout>

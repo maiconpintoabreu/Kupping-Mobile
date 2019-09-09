@@ -47,8 +47,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@android:drawable/stat_notify_chat"
+            app:srcCompat="@drawable/ic_qr"
+            app:tint="@color/color_log_in"
             app:layout_anchor="@+id/event_detail_container"
-            app:layout_anchorGravity="top|end" android:visibility="gone"/>
+            app:layout_anchorGravity="top|end"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

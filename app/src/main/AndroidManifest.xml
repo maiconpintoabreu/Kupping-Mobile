@@ -33,6 +33,16 @@
                     android:value="io.ngrok.kupping.kuppingmobile.EventListActivity"/>
         </activity>
         <activity
+                android:name=".EventNewActivity"
+                android:windowSoftInputMode="adjustResize"
+                android:label="@string/title_event_new"
+                android:parentActivityName=".EventListActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="io.ngrok.kupping.kuppingmobile.EventListActivity"/>
+        </activity>
+        <activity
                 android:name=".CameraQRActivity"
                 android:label="@string/menu_camera_qr"
                 android:theme="@style/AppTheme.NoActionBar">

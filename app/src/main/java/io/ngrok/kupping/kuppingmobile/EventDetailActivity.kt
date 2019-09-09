@@ -15,9 +15,12 @@ class EventDetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_event_detail)
         setSupportActionBar(detail_toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        fab.setOnClickListener {
+            run {
+                val intent = Intent(this, CameraQRActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                this.startActivity(intent)
+            }
         }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

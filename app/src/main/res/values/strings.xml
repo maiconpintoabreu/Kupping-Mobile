@@ -35,4 +35,22 @@
     <string name="title_event_detail">Event Detail</string>
 
 
+    <string name="title_event_new">New Event</string>
+    <string name="name_hint">Name</string>
+    <string name="style_hint">Style</string>
+    <string name="about_hint">About</string>
+    <string name="start_hint">Start</string>
+    <string name="start_from_hint">From</string>
+    <string name="finish_hint">Finish</string>
+    <string name="finish_to_hint">To</string>
+    <string name="repeat_hint">Repeat</string>
+    <string name="place_hint">Place</string>
+    <string name="zip_code_hint">Zip Code</string>
+    <string name="country_hint">Country</string>
+    <string name="city_hint">City</string>
+    <string name="address_hint">Address</string>
+    <string name="create_event">Create Event</string>
+    <string name="new_event">New Event</string>
+
+
 </resources>

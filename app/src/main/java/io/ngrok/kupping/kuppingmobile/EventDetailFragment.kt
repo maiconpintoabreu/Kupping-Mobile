@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.event_detail.view.event_detail
 
 class EventDetailFragment : Fragment() {
 
-    private lateinit var item: EventWithStudentsModel
+    lateinit var item: EventWithStudentsModel
     private lateinit var bar: ProgressBar
 
     private val danceClassApiService by lazy {
@@ -49,6 +49,7 @@ class EventDetailFragment : Fragment() {
         activity?.toolbar_layout?.title = item.name
         item.let {
             event_detail.text = item.about
+            Properties.instance.eventSelected = it
         }
         bar.visibility = ProgressBar.GONE
     }

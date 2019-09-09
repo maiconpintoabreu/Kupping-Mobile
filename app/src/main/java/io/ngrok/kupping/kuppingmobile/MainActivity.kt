@@ -10,9 +10,11 @@ import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import android.view.Menu
+import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.LoginModel
@@ -45,7 +47,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         val btnLogin: Button = findViewById(R.id.btn_login)
         btnLogin.setOnClickListener {
-            login(usernameTextInputEditText.text.toString(),passwordTextInputEditText.text.toString())
+            login(it.rootView,usernameTextInputEditText.text.toString(),passwordTextInputEditText.text.toString())
         }
         properties = Properties.instance
         if(properties.token.isNotBlank()){
@@ -76,21 +78,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onPause()
         disposable?.dispose()
     }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(R.menu.main, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        // Handle action bar item clicks here. The action bar will
+//        // automatically handle clicks on the Home/Up button, so long
+//        // as you specify a parent activity in AndroidManifest.xml.
+//        return when (item.itemId) {
+//            R.id.action_settings -> true
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
@@ -99,7 +101,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
-    private fun login(username: String, password: String){
+    private fun login(view: View, username: String, password: String){
         val loginModel = LoginModel(username,password)
         loginBar.visibility = ProgressBar.VISIBLE
         disposable =
@@ -107,13 +109,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { result -> showResult(result.token) },
-                    { error -> showError(error.message) }
+                    { result -> showResult(view,result.token) },
+                    { error -> showError(view,error.message) }
                 )
     }
-    private fun showResult(token: String){
+    private fun showResult(view: View,token: String){
         loginBar.visibility = ProgressBar.GONE
-        Toast.makeText(applicationContext, "Log in success", Toast.LENGTH_LONG).show()
+        Snackbar.make(view, "Log in success", Snackbar.LENGTH_LONG)
+            .setAction("Login-Success", null).show()
         properties.token = token
         navView.menu.clear()
         navView.inflateMenu(R.menu.activity_main_drawer_logged_in)
@@ -123,8 +126,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
-    private fun showError(message: String?) {
+    private fun showError(view: View,message: String?) {
         loginBar.visibility = ProgressBar.GONE
-        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        Snackbar.make(view, message.toString(), Snackbar.LENGTH_LONG)
+            .setAction("Login-Error", null).show()
     }
 }

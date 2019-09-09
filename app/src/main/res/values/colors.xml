@@ -17,4 +17,5 @@
     <color name="color_input_hint">#000</color>
     <color name="color_text_highlight">#0a0a0a</color>
     <color name="color_text">#000</color>
+    <color name="color_white">#FFF</color>
 </resources>

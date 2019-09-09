@@ -1,6 +1,7 @@
 package io.ngrok.kupping.kuppingmobile.services
 
 import io.ngrok.kupping.kuppingmobile.Properties
+import io.ngrok.kupping.kuppingmobile.models.CheckinResponseModel
 import io.ngrok.kupping.kuppingmobile.models.EventModel
 import io.ngrok.kupping.kuppingmobile.models.EventWithStudentsModel
 import io.reactivex.Observable
@@ -18,6 +19,10 @@ interface DanceClassApiService {
     @GET("private/danceclass/{id}")
     fun danceClass(@Header("Authorization") token: String,@Path("id") id: String):
             Observable<EventWithStudentsModel>
+
+    @POST("private/danceclass/{id}/checkin/{studentId}")
+    fun checkin(@Header("Authorization") token: String,@Path("id") id: String,@Path("studentId") studentId: String):
+            Observable<CheckinResponseModel>
 
     companion object {
         fun create(): DanceClassApiService {

@@ -64,8 +64,25 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         toolbar.title = title
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAction("Action", null).show()
+
+            if (twoPane) {
+                val fragment = EventNewFragment().apply {
+                    arguments = Bundle().apply {
+//                        putString(EventNewFragment.ARG_ITEM_ID, item._id)
+                    }
+                }
+                this.supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.event_detail_container, fragment)
+                    .commit()
+            } else {
+                val intent = Intent(view.context, EventNewActivity::class.java).apply {
+//                    putExtra(EventDetailFragment.ARG_ITEM_ID, item._id)
+                }
+                view.context.startActivity(intent)
+            }
         }
 
         if (event_detail_container != null) {
@@ -118,14 +135,25 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     { error -> showError(error.message) }
                 )
     }
+
+    override fun onBackPressed() {
+        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
     private fun showResult(eventList: List<EventModel>){
         this.eventList = eventList
         setupRecyclerView(event_list)
         event_bar.visibility = ProgressBar.GONE
     }
     private fun showError(message: String?) {
-        Log.e("Connection ERROR",message)
-        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        if (message != null) {
+            Log.e("Connection ERROR",message)
+            Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        }
         event_bar.visibility = ProgressBar.GONE
     }
 

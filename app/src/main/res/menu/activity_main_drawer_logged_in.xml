@@ -8,10 +8,6 @@
                     android:id="@+id/nav_dance_class"
                     android:icon="@drawable/ic_menu_dance_class"
                     android:title="@string/menu_dance_classes"/>
-            <item
-                    android:id="@+id/nav_camera"
-                    android:icon="@drawable/ic_menu_camera"
-                    android:title="@string/menu_camera_qr"/>
         </menu>
     </item>
 
