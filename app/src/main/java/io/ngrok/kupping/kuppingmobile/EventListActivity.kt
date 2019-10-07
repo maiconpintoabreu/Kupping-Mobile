@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -127,7 +126,7 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun getEvents(){
         event_bar.visibility = ProgressBar.VISIBLE
         disposable =
-            danceClassApiService.danceClasses("Bearer "+properties.token)
+            danceClassApiService.events("Bearer "+properties.token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

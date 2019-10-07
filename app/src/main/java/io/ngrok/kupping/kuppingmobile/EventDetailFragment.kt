@@ -7,17 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
-import io.ngrok.kupping.kuppingmobile.models.EventModel
 import io.ngrok.kupping.kuppingmobile.models.EventWithStudentsModel
 import io.ngrok.kupping.kuppingmobile.services.DanceClassApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_event_detail.*
-import kotlinx.android.synthetic.main.app_bar_event_list.*
 import kotlinx.android.synthetic.main.event_detail.*
-import kotlinx.android.synthetic.main.event_detail.view.*
-import kotlinx.android.synthetic.main.event_detail.view.event_detail
 
 class EventDetailFragment : Fragment() {
 
@@ -36,7 +32,7 @@ class EventDetailFragment : Fragment() {
         bar.visibility = ProgressBar.VISIBLE
         if(id!!.isNotBlank())
         disposable =
-            danceClassApiService.danceClass("Bearer "+Properties.instance.token,id)
+            danceClassApiService.event("Bearer "+Properties.instance.token,id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

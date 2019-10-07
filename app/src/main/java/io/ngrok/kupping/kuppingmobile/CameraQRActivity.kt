@@ -11,7 +11,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.app.ActivityCompat
@@ -20,19 +19,14 @@ import com.google.zxing.ResultPoint
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
-import io.ngrok.kupping.kuppingmobile.models.CheckinResponseModel
-import io.ngrok.kupping.kuppingmobile.models.EventModel
+import io.ngrok.kupping.kuppingmobile.models.ResponseModel
 import io.ngrok.kupping.kuppingmobile.models.StudentModel
 import io.ngrok.kupping.kuppingmobile.services.DanceClassApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.app_bar_event_list.*
 import kotlinx.android.synthetic.main.content_camera_qr.*
-import kotlinx.android.synthetic.main.event_list.*
-import okhttp3.ResponseBody
 import retrofit2.HttpException
-import kotlin.math.log
 
 class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
 
@@ -138,7 +132,7 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread())
                                 .subscribe(
-                                    { result -> showResult(result as CheckinResponseModel) },
+                                    { result -> showResult(result as ResponseModel) },
                                     { error -> showError(error) }
                                 )
                     }
@@ -166,7 +160,7 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
 
     }
 
-    private fun showResult(checkingResponseModel: CheckinResponseModel){
+    private fun showResult(checkingResponseModel: ResponseModel){
 
         if (checkingResponseModel.status) {
             Toast.makeText(applicationContext, checkingResponseModel.message, Toast.LENGTH_SHORT).show()
