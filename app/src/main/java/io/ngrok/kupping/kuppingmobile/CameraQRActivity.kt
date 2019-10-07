@@ -21,7 +21,7 @@ import com.journeyapps.barcodescanner.BarcodeResult
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.ResponseModel
 import io.ngrok.kupping.kuppingmobile.models.StudentModel
-import io.ngrok.kupping.kuppingmobile.services.DanceClassApiService
+import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -190,7 +190,7 @@ class CameraQRActivity : AppCompatActivity(), NavigationView.OnNavigationItemSel
     }
 
     private val danceClassApiService by lazy {
-        DanceClassApiService.create()
+        EventApiService.create()
     }
     private var disposable: Disposable? = null
 }

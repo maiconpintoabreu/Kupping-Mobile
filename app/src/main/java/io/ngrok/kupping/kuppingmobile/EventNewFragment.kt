@@ -5,29 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import io.ngrok.kupping.kuppingmobile.services.DanceClassApiService
+import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_event_detail.*
-import kotlinx.android.synthetic.main.app_bar_event_list.*
-import kotlinx.android.synthetic.main.event_detail.*
-import kotlinx.android.synthetic.main.event_detail.view.*
-import kotlinx.android.synthetic.main.event_detail.view.event_detail
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.widget.*
-import androidx.core.app.NavUtils
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import io.ngrok.kupping.kuppingmobile.models.*
 import io.ngrok.kupping.kuppingmobile.services.StyleApiService
-import kotlinx.android.synthetic.main.event_new.*
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
-import javax.xml.datatype.DatatypeConstants.MONTHS
+import java.util.logging.Logger
+import kotlin.math.log
 
 
 class EventNewFragment : Fragment() {
@@ -45,11 +38,11 @@ class EventNewFragment : Fragment() {
     private lateinit var countryInputEditText: TextInputEditText
     private lateinit var cityInputEditText: TextInputEditText
     private lateinit var addressInputEditText: TextInputEditText
-
+    private var errorMsg:String = ""
     private var dateFormat = "dd/MM/yyyy"
     private var listStyle: List<StyleModel> = listOf()
     private val danceClassApiService by lazy {
-        DanceClassApiService.create()
+        EventApiService.create()
     }
     private val styleApiService by lazy {
         StyleApiService.create()
@@ -59,30 +52,83 @@ class EventNewFragment : Fragment() {
         disposable?.dispose()
     }
     private var disposable: Disposable? = null
+    private fun validate(view: View): Boolean{
+        var result: Boolean
+        val requiredErrorFields:ArrayList<String> = ArrayList()
 
+        if(startInputEditText.text.toString().isNullOrEmpty()){
+            requiredErrorFields.add("Start")
+        }
+        if(startFromInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("Start From")
+        }
+        if(finishInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("Finish")
+        }
+        if(finishToInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("Finish To")
+        }
+        if(nameInputEditText.text.toString().isNullOrEmpty()){
+            requiredErrorFields.add("Name")
+        }
+        if(aboutInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("About")
+        }
+
+        if(styleInputSpinner.selectedItemPosition < 0){
+            requiredErrorFields.add("Style")
+        }
+        if(zipCodeInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("ZipCode")
+        }
+        if(countryInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("Country")
+        }
+        if(cityInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("City")
+        }
+        if(addressInputEditText.text.toString().isNullOrBlank()){
+            requiredErrorFields.add("Address")
+        }
+        if(requiredErrorFields.isNotEmpty()){
+            result = false
+            errorMsg = "Required fields: "+requiredErrorFields.joinToString()
+        }else{
+            result = true
+        }
+        return result
+    }
     private fun submit(view: View){
-        val dateStart = SimpleDateFormat(dateFormat).parse(startInputEditText.text.toString() + " "+startFromInputEditText.text.toString())
-        val dateFinish = SimpleDateFormat(dateFormat).parse(finishInputEditText.text.toString() + " "+finishToInputEditText.text.toString())
+        if(validate(view)) {
+            val dateStart =
+                SimpleDateFormat(dateFormat).parse(startInputEditText.text.toString() + " " + startFromInputEditText.text.toString())
+            val dateFinish =
+                SimpleDateFormat(dateFormat).parse(finishInputEditText.text.toString() + " " + finishToInputEditText.text.toString())
 
-        val eventModel = NewEventModel(
-            nameInputEditText.text.toString(),
-            aboutInputEditText.text.toString(),
-            listStyle[styleInputSpinner.selectedItemPosition],
-            dateStart.time,
-            dateFinish.time,
-            zipCodeInputEditText.text.toString(),
-            countryInputEditText.text.toString(),
-            cityInputEditText.text.toString(),
-            addressInputEditText.text.toString())
-        bar.visibility = ProgressBar.VISIBLE
-        disposable =
-            danceClassApiService.createEvent("Bearer "+Properties.instance.token,eventModel)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { result -> showResult(view,result) },
-                    { error -> showError(view,error.message) }
-                )
+            val eventModel = NewEventModel(
+                nameInputEditText.text.toString(),
+                aboutInputEditText.text.toString(),
+                listStyle[styleInputSpinner.selectedItemPosition],
+                dateStart.time,
+                dateFinish.time,
+                zipCodeInputEditText.text.toString(),
+                countryInputEditText.text.toString(),
+                cityInputEditText.text.toString(),
+                addressInputEditText.text.toString()
+            )
+            bar.visibility = ProgressBar.VISIBLE
+            disposable =
+                danceClassApiService.createEvent("Bearer " + Properties.instance.token, eventModel)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { result -> showResult(view, result) },
+                        { error -> showError(view, error.message) }
+                    )
+        }else{
+            Snackbar.make(view, errorMsg, Snackbar.LENGTH_LONG)
+                .setAction("Submit-Error", null).show()
+        }
     }
     private fun showResult(view: View,response: ResponseModel){
         bar.visibility = ProgressBar.GONE

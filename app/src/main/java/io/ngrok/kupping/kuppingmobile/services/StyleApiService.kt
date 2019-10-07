@@ -10,7 +10,7 @@ import retrofit2.http.*
 
 interface StyleApiService {
 
-    @GET("private/dancestyle")
+    @GET("private/style")
     fun styles(@Header("Authorization") authorization: String):
             Observable<List<StyleModel>>
     companion object {

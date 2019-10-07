@@ -20,7 +20,7 @@ import com.google.android.material.navigation.NavigationView
 
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.EventModel
-import io.ngrok.kupping.kuppingmobile.services.DanceClassApiService
+import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -111,7 +111,7 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     }
 
     private val danceClassApiService by lazy {
-        DanceClassApiService.create()
+        EventApiService.create()
     }
     override fun onPause() {
         super.onPause()

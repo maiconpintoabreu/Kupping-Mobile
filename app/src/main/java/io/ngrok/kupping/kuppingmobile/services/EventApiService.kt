@@ -11,25 +11,25 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
-interface DanceClassApiService {
+interface EventApiService {
 
-    @GET("private/danceclass")
+    @GET("private/event")
     fun events(@Header("Authorization") authorization: String):
             Observable<List<EventModel>>
-    @POST("private/danceclass")
+    @POST("private/event")
     fun createEvent(@Header("Authorization") authorization: String, @Body newEvent: NewEventModel):
             Observable<ResponseModel>
 
-    @GET("private/danceclass/{id}")
+    @GET("private/event/{id}")
     fun event(@Header("Authorization") token: String, @Path("id") id: String):
             Observable<EventWithStudentsModel>
 
-    @POST("private/danceclass/{id}/checkin/{studentId}")
+    @POST("private/event/{id}/checkin/{studentId}")
     fun checkin(@Header("Authorization") token: String,@Path("id") id: String,@Path("studentId") studentId: String):
             Observable<ResponseModel>
 
     companion object {
-        fun create(): DanceClassApiService {
+        fun create(): EventApiService {
 
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(
@@ -39,7 +39,7 @@ interface DanceClassApiService {
                 .baseUrl(Properties.instance.url)
                 .build()
 
-            return retrofit.create(DanceClassApiService::class.java)
+            return retrofit.create(EventApiService::class.java)
         }
     }
 }
