@@ -1,0 +1,42 @@
+name: Android CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK 1.8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+    - name: Build with Gradle
+      run: ./gradlew build
+      
+    - name: Sign Android release
+      uses: r0adkll/sign-android-release@v1
+      with:
+        releaseDirectory: app/build/outputs/bundle/release
+        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+        alias: ${{ secrets.ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+        keyPassword: ${{ secrets.KEY_PASSWORD }}
+        signedReleaseFile: app/releases/app.aab
+    - name: GH Release
+      uses: softprops/action-gh-release@v0.1.0
+      with:
+        # Note-worthy description of changes in release
+        body: # optional, default is empty
+        # Path to load note-worthy description of changes in release from
+        body-path: # optional, default is empty
+        # Gives the release a custom name
+        name: # optional, default is Name of tag
+        # Creates a draft release
+        draft: true
+        # Comma-delimited list of path globs for asset files to upload
+        files: app/releases/app.aab
+      
+    
