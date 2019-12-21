@@ -4,7 +4,11 @@ on:
   push:
     branches:
     - master
-
+env:
+  SIGNINGKEYBASE64: ${{ secrets.SIGNING_KEY }}
+  ALIAS: ${{ secrets.ALIAS }}
+  KEYSTOREPASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+  KEYPASSWORD: ${{ secrets.KEY_PASSWORD }}
 jobs:
   build:
 
@@ -18,11 +22,6 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Gradle
-      with:
-        SIGNINGKEYBASE64: ${{ secrets.SIGNING_KEY }}
-        ALIAS: ${{ secrets.ALIAS }}
-        KEYSTOREPASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-        KEYPASSWORD: ${{ secrets.KEY_PASSWORD }}
       run: |
         touch keystore.properties && echo 'storePassword=' >> keystore.properties && echo 'keyPassword=' >> keystore.properties
          && echo 'keyAlias=' >> keystore.properties && echo 'storeFile=' >> keystore.properties
