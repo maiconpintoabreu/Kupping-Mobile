@@ -23,8 +23,11 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: |
-        touch keystore.properties && echo 'storePassword=' >> keystore.properties && echo 'keyPassword=' >> keystore.properties
-         && echo 'keyAlias=' >> keystore.properties && echo 'storeFile=' >> keystore.properties
+        touch keystore.properties
+        echo 'storePassword=' >> keystore.properties
+        echo 'keyPassword=' >> keystore.properties
+        echo 'keyAlias=' >> keystore.properties
+        echo 'storeFile=' >> keystore.properties
         sed -i -e "s/storePassword/${KEYSTOREPASSWORD}/g" keystore.properties
         sed -i -e "s/keyPassword/${KEYPASSWORD}/g" keystore.properties
         sed -i -e "s/keyAlias/${ALIAS}/g" keystore.properties
