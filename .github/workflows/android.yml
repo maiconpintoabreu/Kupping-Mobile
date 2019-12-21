@@ -34,8 +34,8 @@ jobs:
         sed -i --expression 's/storeFile/${SIGNINGKEYBASE64}/g' keystore.properties
         sudo -E chown -R $(whoami) $ANDROID_HOME
         chmod +x gradlew
-        ./gradlew build
-#
+        ./gradlew :app:bundleRelease
+      #
 #    - name: Sign Android release
 #      uses: r0adkll/sign-android-release@v1
 #      with:
