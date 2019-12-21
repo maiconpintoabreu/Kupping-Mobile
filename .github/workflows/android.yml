@@ -19,7 +19,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: |
-        chown -R $(whoami) $ANDROID_HOME
+        sudo -E chown -R $(whoami) $ANDROID_HOME
         chmod +x gradlew
         ./gradlew build
 
