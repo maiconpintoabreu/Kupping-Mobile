@@ -46,10 +46,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|start"
-            android:layout_margin="@dimen/fab_margin"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
             app:srcCompat="@drawable/ic_qr"
             app:tint="@color/color_log_in"
             app:layout_anchor="@+id/event_detail_container"
             app:layout_anchorGravity="top|end"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/edit_students_event_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="80dp"
+            android:layout_marginRight="80dp"
+            app:srcCompat="@drawable/ic_menu_send"
+            app:tint="@color/color_log_in"
+            app:layout_anchor="@+id/fab"
+            app:layout_anchorGravity="left"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/edit_event_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="145dp"
+            android:layout_marginRight="145dp"
+            app:srcCompat="@drawable/ic_menu_manage"
+            app:tint="@color/color_log_in"
+            app:layout_anchor="@+id/edit_students_event_btn"
+            app:layout_anchorGravity="left"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

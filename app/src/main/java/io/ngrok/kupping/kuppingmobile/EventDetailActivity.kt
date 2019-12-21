@@ -2,7 +2,6 @@ package io.ngrok.kupping.kuppingmobile
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import android.view.MenuItem
@@ -16,6 +15,20 @@ class EventDetailActivity : AppCompatActivity() {
         setSupportActionBar(detail_toolbar)
 
         fab.setOnClickListener {
+            run {
+                val intent = Intent(this, CameraQRActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                this.startActivity(intent)
+            }
+        }
+        edit_event_btn.setOnClickListener {
+            run {
+                val intent = Intent(this, CameraQRActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                this.startActivity(intent)
+            }
+        }
+        edit_students_event_btn.setOnClickListener {
             run {
                 val intent = Intent(this, CameraQRActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

@@ -2,6 +2,7 @@ package io.ngrok.kupping.kuppingmobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
 import android.view.MenuItem
@@ -16,6 +17,7 @@ import android.widget.ProgressBar
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
+import com.google.gson.JsonParser
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.LoginModel
 import io.ngrok.kupping.kuppingmobile.services.IAMApiService
@@ -23,6 +25,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.event_list_content.*
+import retrofit2.HttpException
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
     private lateinit var properties: Properties
@@ -47,7 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         navView.setNavigationItemSelectedListener(this)
         val btnLogin: Button = findViewById(R.id.btn_login)
         btnLogin.setOnClickListener {
-            login(it.rootView,usernameTextInputEditText.text.toString(),passwordTextInputEditText.text.toString())
+            login(it,usernameTextInputEditText.text.toString(),passwordTextInputEditText.text.toString())
         }
         properties = Properties.instance
         if(properties.token.isNotBlank()){
@@ -61,6 +65,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         loginBar = findViewById(R.id.login_bar)
         loginBar.visibility = ProgressBar.GONE
+
     }
     private val loginApiService by lazy {
         IAMApiService.create()
@@ -110,7 +115,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { result -> showResult(view,result.token) },
-                    { error -> showError(view,error.message) }
+                    { error -> showError(view,error) }
                 )
     }
     private fun showResult(view: View,token: String){
@@ -126,9 +131,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
     }
-    private fun showError(view: View,message: String?) {
+    private fun showError(view: View,e: Throwable) {
         loginBar.visibility = ProgressBar.GONE
-        Snackbar.make(view, message.toString(), Snackbar.LENGTH_LONG)
+
+        val error = e as HttpException
+
+        val errorJsonString = error.response().errorBody()?.string()
+//        val message = JsonParser().parse(errorJsonString)
+//            .asJsonObject["message"]
+//            .asString
+        Log.e("LOGIN-ERROR",errorJsonString)
+        Snackbar.make(view, "ERROR $errorJsonString", Snackbar.LENGTH_LONG)
             .setAction("Login-Error", null).show()
     }
 }
