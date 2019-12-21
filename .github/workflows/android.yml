@@ -19,6 +19,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: |
+        mkdir -p /usr/local/lib/android/sdk
         chmod +x gradlew
         ./gradlew build
 
