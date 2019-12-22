@@ -25,6 +25,7 @@ jobs:
     - name: Build with Gradle
       run: |
         echo $GOOGLE_JSON > app/google-services.json
+        echo $SIGNINGKEYBASE64 | base64 -d > keystore.jks
         touch keystore.properties
         echo 'storePassword=' >> keystore.properties
         echo 'keyPassword=' >> keystore.properties
@@ -33,7 +34,7 @@ jobs:
         sed -i --expression 's/storePassword/${KEYSTOREPASSWORD}/g' keystore.properties
         sed -i --expression 's/keyPassword/${KEYPASSWORD}/g' keystore.properties
         sed -i --expression 's/keyAlias/${ALIAS}/g' keystore.properties
-        sed -i --expression 's/storeFile/${SIGNINGKEYBASE64}/g' keystore.properties
+        sed -i --expression 's/storeFile/file(keystore.jks)/g' keystore.properties
         sudo -E chown -R $(whoami) $ANDROID_HOME
         chmod +x gradlew
         ./gradlew :app:bundleRelease
