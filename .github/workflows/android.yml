@@ -28,10 +28,11 @@ jobs:
         echo 'keyPassword=' >> keystore.properties
         echo 'keyAlias=' >> keystore.properties
         echo 'storeFile=' >> keystore.properties
+        base64 -d $SIGNINGKEYBASE64 > keystore.jks
         sed -i --expression 's/storePassword/${KEYSTOREPASSWORD}/g' keystore.properties
         sed -i --expression 's/keyPassword/${KEYPASSWORD}/g' keystore.properties
         sed -i --expression 's/keyAlias/${ALIAS}/g' keystore.properties
-        sed -i --expression 's/storeFile/${SIGNINGKEYBASE64}/g' keystore.properties
+        sed -i --expression 's/storeFile/keystore.jks/g' keystore.properties
         sudo -E chown -R $(whoami) $ANDROID_HOME
         chmod +x gradlew
         ./gradlew :app:bundleRelease
