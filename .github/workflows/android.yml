@@ -9,6 +9,7 @@ env:
   ALIAS: ${{ secrets.ALIAS }}
   KEYSTOREPASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
   KEYPASSWORD: ${{ secrets.KEY_PASSWORD }}
+  GOOGLE_JSON: ${{ secrets.GOOGLE_JSON }}
 jobs:
   build:
 
@@ -23,6 +24,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: |
+        echo $GCLOUD_AUTH_JSON > app/google-services.json
         touch keystore.properties
         echo 'storePassword=' >> keystore.properties
         echo 'keyPassword=' >> keystore.properties
