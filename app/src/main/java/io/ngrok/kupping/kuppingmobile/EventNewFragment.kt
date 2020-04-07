@@ -93,6 +93,8 @@ class EventNewFragment : Fragment() {
         if(requiredErrorFields.isNotEmpty()){
             result = false
             errorMsg = "Required fields: "+requiredErrorFields.joinToString()
+            Snackbar.make(view, errorMsg, Snackbar.LENGTH_LONG)
+                .setAction("Error-required-fields", null).show()
         }else{
             result = true
         }
@@ -104,27 +106,31 @@ class EventNewFragment : Fragment() {
                 SimpleDateFormat(dateFormat).parse(startInputEditText.text.toString() + " " + startFromInputEditText.text.toString())
             val dateFinish =
                 SimpleDateFormat(dateFormat).parse(finishInputEditText.text.toString() + " " + finishToInputEditText.text.toString())
-
-            val eventModel = NewEventModel(
-                nameInputEditText.text.toString(),
-                aboutInputEditText.text.toString(),
-                listStyle[styleInputSpinner.selectedItemPosition],
-                dateStart.time,
-                dateFinish.time,
-                zipCodeInputEditText.text.toString(),
-                countryInputEditText.text.toString(),
-                cityInputEditText.text.toString(),
-                addressInputEditText.text.toString()
-            )
-            bar.visibility = ProgressBar.VISIBLE
-            disposable =
-                danceClassApiService.createEvent("Bearer " + Properties.instance.token, eventModel)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { result -> showResult(view, result) },
-                        { error -> showError(view, error.message) }
+            if(dateStart != null && dateFinish != null) {
+                val eventModel = NewEventModel(
+                    nameInputEditText.text.toString(),
+                    aboutInputEditText.text.toString(),
+                    listStyle[styleInputSpinner.selectedItemPosition],
+                    dateStart.time,
+                    dateFinish.time,
+                    zipCodeInputEditText.text.toString(),
+                    countryInputEditText.text.toString(),
+                    cityInputEditText.text.toString(),
+                    addressInputEditText.text.toString()
+                )
+                bar.visibility = ProgressBar.VISIBLE
+                disposable =
+                    danceClassApiService.createEvent(
+                        "Bearer " + Properties.instance.token,
+                        eventModel
                     )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            { result -> showResult(view, result) },
+                            { error -> showError(view, error.message) }
+                        )
+            }
         }else{
             Snackbar.make(view, errorMsg, Snackbar.LENGTH_LONG)
                 .setAction("Submit-Error", null).show()

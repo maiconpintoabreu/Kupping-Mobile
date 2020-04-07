@@ -14,7 +14,7 @@
     <dimen name="unfolded_size">40sp</dimen>
     <dimen name="option_size">56dp</dimen>
     <dimen name="text_padding">16dp</dimen>
-    <dimen name="input_width">220dp</dimen>
+    <dimen name="input_width">320dp</dimen>
     <dimen name="label_size">20sp</dimen>
     <dimen name="folded_label_padding">22sp</dimen>
     <dimen name="logo_size">120dp</dimen>
