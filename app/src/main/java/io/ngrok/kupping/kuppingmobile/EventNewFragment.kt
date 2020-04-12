@@ -11,7 +11,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_event_detail.*
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
+import android.view.MotionEvent
 import android.widget.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -27,10 +29,10 @@ class EventNewFragment : Fragment() {
 
     private lateinit var bar: ProgressBar
     private lateinit var btnSave: Button
-    private lateinit var startInputEditText: TextInputEditText
-    private lateinit var startFromInputEditText: TextInputEditText
-    private lateinit var finishInputEditText: TextInputEditText
-    private lateinit var finishToInputEditText: TextInputEditText
+    private lateinit var startInputEdit: TextInputEditText
+    private lateinit var finishInputEdit: TextInputEditText
+    private lateinit var startFromInputEdit: TextInputEditText
+    private lateinit var finishToInputEdit: TextInputEditText
     private lateinit var nameInputEditText: TextInputEditText
     private lateinit var styleInputSpinner: Spinner
     private lateinit var aboutInputEditText: TextInputEditText
@@ -39,7 +41,7 @@ class EventNewFragment : Fragment() {
     private lateinit var cityInputEditText: TextInputEditText
     private lateinit var addressInputEditText: TextInputEditText
     private var errorMsg:String = ""
-    private var dateFormat = "dd/MM/yyyy"
+    private var dateFormat = "dd-MM-yyyy HH:mm"
     private var listStyle: List<StyleModel> = listOf()
     private val danceClassApiService by lazy {
         EventApiService.create()
@@ -56,16 +58,16 @@ class EventNewFragment : Fragment() {
         var result: Boolean
         val requiredErrorFields:ArrayList<String> = ArrayList()
 
-        if(startInputEditText.text.toString().isNullOrEmpty()){
+        if(startInputEdit.text.toString().isNullOrEmpty()){
             requiredErrorFields.add("Start")
         }
-        if(startFromInputEditText.text.toString().isNullOrBlank()){
+        if(startFromInputEdit.text.toString().isNullOrBlank()){
             requiredErrorFields.add("Start From")
         }
-        if(finishInputEditText.text.toString().isNullOrBlank()){
+        if(finishInputEdit.text.toString().isNullOrBlank()){
             requiredErrorFields.add("Finish")
         }
-        if(finishToInputEditText.text.toString().isNullOrBlank()){
+        if(finishToInputEdit.text.toString().isNullOrBlank()){
             requiredErrorFields.add("Finish To")
         }
         if(nameInputEditText.text.toString().isNullOrEmpty()){
@@ -103,20 +105,28 @@ class EventNewFragment : Fragment() {
     private fun submit(view: View){
         if(validate(view)) {
             val dateStart =
-                SimpleDateFormat(dateFormat).parse(startInputEditText.text.toString() + " " + startFromInputEditText.text.toString())
+                SimpleDateFormat(dateFormat).parse(startInputEdit.text.toString() + " " + startFromInputEdit.text.toString())
             val dateFinish =
-                SimpleDateFormat(dateFormat).parse(finishInputEditText.text.toString() + " " + finishToInputEditText.text.toString())
+                SimpleDateFormat(dateFormat).parse(finishInputEdit.text.toString() + " " + finishToInputEdit.text.toString())
             if(dateStart != null && dateFinish != null) {
+                var styleId: String
+                if(listStyle[styleInputSpinner.selectedItemPosition] != null){
+                    styleId = listStyle[styleInputSpinner.selectedItemPosition]._id
+                }else{
+                    styleId = listStyle[0]._id
+                }
                 val eventModel = NewEventModel(
                     nameInputEditText.text.toString(),
                     aboutInputEditText.text.toString(),
-                    listStyle[styleInputSpinner.selectedItemPosition],
+                    styleId,
                     dateStart.time,
                     dateFinish.time,
-                    zipCodeInputEditText.text.toString(),
-                    countryInputEditText.text.toString(),
-                    cityInputEditText.text.toString(),
-                    addressInputEditText.text.toString()
+                    PlaceModel(
+                        zipCodeInputEditText.text.toString(),
+                        countryInputEditText.text.toString(),
+                        cityInputEditText.text.toString(),
+                        addressInputEditText.text.toString()
+                    )
                 )
                 bar.visibility = ProgressBar.VISIBLE
                 disposable =
@@ -155,14 +165,8 @@ class EventNewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var view = inflater.inflate(R.layout.event_new, container, false)
-        bar = view.findViewById(R.id.event_new_bar)
-        startInputEditText = view.findViewById(R.id.start_input_edit)
-        startInputEditText.setText(SimpleDateFormat(dateFormat).format(System.currentTimeMillis()))
-        finishInputEditText = view.findViewById(R.id.finish_input_edit)
-        finishInputEditText.setText(SimpleDateFormat(dateFormat).format(System.currentTimeMillis()))
-        startFromInputEditText = view.findViewById(R.id.start_from_input_edit)
-        finishToInputEditText = view.findViewById(R.id.finish_to_input_edit)
+        var view = inflater.inflate(R.layout.event_detail, container, false)
+        bar = view.findViewById(R.id.event_detail_bar)
         nameInputEditText = view.findViewById(R.id.name_input_edit)
         styleInputSpinner = view.findViewById(R.id.style_input)
         aboutInputEditText = view.findViewById(R.id.about_input_edit)
@@ -192,64 +196,100 @@ class EventNewFragment : Fragment() {
                     { error -> showError(view,error.message) }
                 )
 
+        startInputEdit = view.findViewById(R.id.start_input_edit)
+        finishInputEdit = view.findViewById(R.id.finish_input_edit)
+        startFromInputEdit = view.findViewById(R.id.start_from_input_edit)
+        finishToInputEdit = view.findViewById(R.id.finish_to_input_edit)
+
         var cal = Calendar.getInstance()
 
-        val dateStartSetListener = DatePickerDialog.OnDateSetListener {_, year, monthOfYear, dayOfMonth ->
+        var calTime = Calendar.getInstance()
+
+        val dateStartSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            val sdf = SimpleDateFormat(dateFormat, Locale.US)
-            startInputEditText.setText(sdf.format(cal.time))
+            val myFormat = "dd-MM-yyyy" // mention the format you need
+            val sdf = SimpleDateFormat(myFormat, Locale.US)
+            startInputEdit.setText(sdf.format(cal.time))
+
         }
-        val dateFinishSetListener = DatePickerDialog.OnDateSetListener {_, year, monthOfYear, dayOfMonth ->
+        val dateFinishSetListener = DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
             cal.set(Calendar.YEAR, year)
             cal.set(Calendar.MONTH, monthOfYear)
             cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            val sdf = SimpleDateFormat(dateFormat, Locale.US)
-            finishInputEditText.setText(sdf.format(cal.time))
-        }
-        val startDatePicker = DatePickerDialog(
-                context!!, dateStartSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-        )
-        val finishDatePicker = DatePickerDialog(
-            context!!, dateFinishSetListener,
-            cal.get(Calendar.YEAR),
-            cal.get(Calendar.MONTH),
-            cal.get(Calendar.DAY_OF_MONTH)
-        )
+            val myFormat = "dd-MM-yyyy" // mention the format you need
+            val sdf = SimpleDateFormat(myFormat, Locale.US)
+            finishInputEdit.setText(sdf.format(cal.time))
 
-        startInputEditText.setOnClickListener {
-            startDatePicker.show()
         }
-        startInputEditText.setOnFocusChangeListener { _, b ->
-            run {
-                if(b) {
-                    startDatePicker.show()
-                }else{
-                    startDatePicker.hide()
+        val timeStartSetListener = TimePickerDialog.OnTimeSetListener { _, hours, minute ->
+            calTime.set(Calendar.HOUR_OF_DAY, hours)
+            calTime.set(Calendar.MINUTE, minute)
+            startFromInputEdit.setText(SimpleDateFormat("HH:mm").format(calTime.time))
+
+        }
+        val timeFinishSetListener= TimePickerDialog.OnTimeSetListener { _, hours, minute ->
+            calTime.set(Calendar.HOUR_OF_DAY, hours)
+            calTime.set(Calendar.MINUTE, minute)
+
+            finishToInputEdit.setText(SimpleDateFormat("HH:mm").format(calTime.time))
+
+        }
+        startInputEdit.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    DatePickerDialog(v.context, dateStartSetListener,
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)).show()
+
                 }
             }
-        }
 
-        finishInputEditText.setOnClickListener {
-            finishDatePicker.show()
+            v?.onTouchEvent(event) ?: true
         }
-        finishInputEditText.setOnFocusChangeListener { _, b ->
-            run {
-                if(b) {
-                    finishDatePicker.show()
-                }else{
-                    finishDatePicker.hide()
+        finishInputEdit.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    DatePickerDialog(v.context, dateFinishSetListener,
+                        cal.get(Calendar.YEAR),
+                        cal.get(Calendar.MONTH),
+                        cal.get(Calendar.DAY_OF_MONTH)).show()
+
                 }
             }
+
+            v?.onTouchEvent(event) ?: true
+        }
+        startFromInputEdit.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    TimePickerDialog(v.context, timeStartSetListener,
+                        cal.get(Calendar.HOUR_OF_DAY),
+                        cal.get(Calendar.MINUTE),true).show()
+
+                }
+            }
+
+            v?.onTouchEvent(event) ?: true
+        }
+        finishToInputEdit.setOnTouchListener { v, event ->
+            when (event?.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    TimePickerDialog(v.context, timeFinishSetListener,
+                        cal.get(Calendar.HOUR_OF_DAY),
+                        cal.get(Calendar.MINUTE),true).show()
+
+                }
+            }
+
+            v?.onTouchEvent(event) ?: true
         }
 
-        btnSave = view.findViewById(R.id.btn_save)
+        btnSave = view.findViewById(R.id.btn_save_event)
         bar.visibility = ProgressBar.GONE
         activity?.toolbar_layout?.title = getString(R.string.new_event)
         btnSave.setOnClickListener {

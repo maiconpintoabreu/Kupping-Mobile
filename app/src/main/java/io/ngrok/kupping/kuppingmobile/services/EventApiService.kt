@@ -16,6 +16,9 @@ interface EventApiService {
     @POST("private/event")
     fun createEvent(@Header("Authorization") authorization: String, @Body newEvent: NewEventModel):
             Observable<ResponseModel>
+    @PUT("private/event/{id}")
+    fun updateEvent(@Header("Authorization") authorization: String, @Path("id") id: String, @Body newEvent: EventWithStudentsModel):
+            Observable<ResponseModel>
 
     @GET("private/event/{id}")
     fun event(@Header("Authorization") token: String, @Path("id") id: String):
@@ -33,6 +36,16 @@ interface EventApiService {
     @GET("private/event/{id}/ticket/qrcode/{studentid}")
     fun qrcode(@Header("Authorization") token: String, @Path("id") eventId: String,@Path("studentid") studentId: String):
             Observable<ImageModel>
+
+    @DELETE("private/event/{id}/booking/{bookingid}")
+    fun removeBooking(@Header("Authorization") token: String,@Path("id") id: String, @Path("bookingid") bookingid: String):
+            Observable<ResponseModel>
+
+    @DELETE("private/event/{id}")
+    fun deleteEvent(@Header("Authorization") token: String,@Path("id") id: String):
+            Observable<ResponseModel>
+
+
 
     companion object {
         fun create(): EventApiService {

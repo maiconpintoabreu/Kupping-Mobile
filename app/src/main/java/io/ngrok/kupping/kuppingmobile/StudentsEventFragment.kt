@@ -37,7 +37,7 @@ import java.util.logging.Logger
 
 class StudentsEventFragment : Fragment() {
 
-    lateinit var item: EventWithStudentsModel
+    private var item: EventWithStudentsModel? = null
     private lateinit var bar: ProgressBar
     private lateinit var peopleList: RecyclerView
     private var twoPane: Boolean = false
@@ -51,6 +51,13 @@ class StudentsEventFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         disposable?.dispose()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(item != null) {
+            getEvent(item!!._id)
+        }
     }
     private var disposable: Disposable? = null
     private fun getEvent(id: String?){
@@ -66,11 +73,11 @@ class StudentsEventFragment : Fragment() {
                 )
     }
     private fun showResult(event: EventWithStudentsModel){
-        item = event
-        activity?.toolbar_layout?.title = item.name + " Students"
-        this.studentList = item.students
+        this.item = event
+        activity?.toolbar_layout?.title = this.item!!.name + " Students"
+        this.studentList = item!!.students
         setupRecyclerView(this.peopleList)
-        item.let {
+        this.item!!.let {
             Properties.instance.eventSelected = it
         }
         bar.visibility = ProgressBar.GONE
@@ -112,7 +119,7 @@ class StudentsEventFragment : Fragment() {
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this.requireActivity(), studentList,item , twoPane)
+        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this.requireActivity(), studentList,this.item!! , twoPane)
     }
     companion object {
         const val ARG_ITEM_ID = "item_id"
@@ -147,7 +154,7 @@ class StudentsEventFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val item = values[position]
-            holder.contentView.text = item.name
+            holder.contentView.text = item!!.name
 
             with(holder.itemView) {
                 tag = item

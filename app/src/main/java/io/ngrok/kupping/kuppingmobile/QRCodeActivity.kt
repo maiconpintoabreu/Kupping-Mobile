@@ -1,18 +1,16 @@
 package io.ngrok.kupping.kuppingmobile
 
-import android.R.attr.mimeType
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import io.ngrok.kupping.kuppingmobile.models.ImageModel
+import io.ngrok.kupping.kuppingmobile.models.ResponseModel
 import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -60,6 +58,9 @@ class QRCodeActivity : AppCompatActivity(){
         getQRCodeImage()
     }
     private var disposable: Disposable? = null
+    private fun showRemoveBookingResult(response: ResponseModel){
+        finish()
+    }
     private fun getQRCodeImage(){
         disposable =
             danceClassApiService.qrcode("Bearer "+properties.token,this.eventId, this.studentId)
@@ -83,7 +84,14 @@ class QRCodeActivity : AppCompatActivity(){
         }
     }
     private fun removePersonEvent(){
-        finish()
+        disposable =
+            danceClassApiService.removeBooking("Bearer "+properties.token,this.eventId, this.studentId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { result -> showRemoveBookingResult(result as ResponseModel) },
+                    { error -> showError(error.message) }
+                )
     }
     private fun shareQRCode(decodedImage: Bitmap){
         var file = File(this.externalCacheDir?.absolutePath, "ticket"+this.eventId+".png")

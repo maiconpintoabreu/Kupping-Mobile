@@ -5,9 +5,7 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.widget.EditText
@@ -16,16 +14,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NavUtils
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import io.ngrok.kupping.kuppingmobile.models.ImageModel
 import io.ngrok.kupping.kuppingmobile.models.NewStudentModel
 import io.ngrok.kupping.kuppingmobile.models.ResponseModel
-import io.ngrok.kupping.kuppingmobile.models.StudentModel
 import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_event_detail.*
-import kotlinx.android.synthetic.main.qr_code_dialog_layout.*
 
 class EventDetailActivity : AppCompatActivity(),
     CustomDialogFragment.NoticeDialogListener{
