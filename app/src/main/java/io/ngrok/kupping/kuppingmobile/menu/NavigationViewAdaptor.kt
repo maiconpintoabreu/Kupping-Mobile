@@ -3,7 +3,9 @@ package io.ngrok.kupping.kuppingmobile.menu
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.room.Room
 import io.ngrok.kupping.kuppingmobile.*
+import io.ngrok.kupping.kuppingmobile.models.AppDatabase
 
 
 interface NavigationViewAdaptor {
@@ -12,6 +14,11 @@ interface NavigationViewAdaptor {
         when (itemId) {
             R.id.nav_logout -> {
                 properties.token = ""
+                var db = Room.databaseBuilder(
+                    context.applicationContext,
+                    AppDatabase::class.java, "kupping-local"
+                ).allowMainThreadQueries().build()
+                db.userLocalService().nukeTable()
                 val intent = Intent(context, MainActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or
                         Intent.FLAG_ACTIVITY_CLEAR_TASK or

@@ -1,5 +1,9 @@
 package io.ngrok.kupping.kuppingmobile
 
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -16,10 +21,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.DialogFragment
 import com.google.android.material.navigation.NavigationView
 
 import io.ngrok.kupping.kuppingmobile.menu.NavigationViewAdaptor
 import io.ngrok.kupping.kuppingmobile.models.EventModel
+import io.ngrok.kupping.kuppingmobile.models.EventWithStudentsModel
+import io.ngrok.kupping.kuppingmobile.models.ResponseModel
 import io.ngrok.kupping.kuppingmobile.services.EventApiService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -36,7 +44,8 @@ import kotlinx.android.synthetic.main.event_list.*
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor {
+class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,NavigationViewAdaptor,
+    DeleteDialogFragment.NoticeDialogListener {
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         getActivity(item.itemId,this)
@@ -53,6 +62,7 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private lateinit var properties: Properties
     private lateinit var navView: NavigationView
     private var eventList: List<EventModel> =  ArrayList()
+    private var item: EventModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,6 +169,15 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
     private fun setupRecyclerView(recyclerView: RecyclerView) {
         recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, eventList, twoPane)
     }
+    private fun showDialog(item: EventModel) {
+        selectLongClickItem(item)
+        val fragmentManager = supportFragmentManager
+        val newFragment = DeleteDialogFragment()
+        newFragment.show(fragmentManager, "dialog")
+    }
+    private fun selectLongClickItem(item: EventModel?){
+        this.item = item
+    }
 
     class SimpleItemRecyclerViewAdapter(
         private val parentActivity: EventListActivity,
@@ -168,6 +187,7 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
         RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder>() {
 
         private val onClickListener: View.OnClickListener
+        private val onLongClickListener: View.OnLongClickListener
 
         init {
             onClickListener = View.OnClickListener { v ->
@@ -189,6 +209,11 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
                     v.context.startActivity(intent)
                 }
             }
+            onLongClickListener = View.OnLongClickListener { v ->
+                val item = v.tag as EventModel
+                parentActivity.showDialog(item)
+                true
+            }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -204,12 +229,84 @@ class EventListActivity : AppCompatActivity(), NavigationView.OnNavigationItemSe
             with(holder.itemView) {
                 tag = item
                 setOnClickListener(onClickListener)
+                setOnLongClickListener(onLongClickListener)
             }
         }
         override fun getItemCount() = values.size
 
         inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val contentView: TextView = view.content
+        }
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        if(this.item != null) {
+
+            disposable =
+                danceClassApiService.deleteEvent("Bearer "+properties.token, this.item!!._id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { result -> showDeleteResult(result as ResponseModel) },
+                        { error -> showError(error.message) }
+                    )
+        }else{
+            Toast.makeText(dialog.context, "ERROR Long Click: " + this.item, Toast.LENGTH_LONG)
+                .show()
+        }
+        dialog.dismiss()
+    }
+    private fun showDeleteResult(result: ResponseModel){
+        Toast.makeText(baseContext, "Event Deleted: " + this.item!!.name, Toast.LENGTH_LONG)
+            .show()
+        getEvents()
+        this.item = null
+    }
+    override fun onDialogNegativeClick(dialog: DialogFragment) {
+        this.item = null
+        dialog.dismiss()
+    }
+}
+
+class DeleteDialogFragment : DialogFragment() {
+
+    private lateinit var listener: NoticeDialogListener
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        return activity?.let {
+            // Build the dialog and set up the button click handlers
+            val builder = AlertDialog.Builder(it)
+            builder.setTitle("Delete Event?")
+                .setPositiveButton("Delete",
+                    DialogInterface.OnClickListener { _, _ ->
+                        // Send the positive button event back to the host activity
+                        listener.onDialogPositiveClick(this)
+                    })
+                .setNegativeButton("Cancel",
+                    DialogInterface.OnClickListener { _, _ ->
+                        // Send the negative button event back to the host activity
+                        listener.onDialogNegativeClick(this)
+                    })
+
+            builder.create()
+        } ?: throw IllegalStateException("Activity cannot be null")
+    }
+    interface NoticeDialogListener {
+        fun onDialogPositiveClick(dialog: DialogFragment)
+        fun onDialogNegativeClick(dialog: DialogFragment)
+    }
+
+    // Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // Verify that the host activity implements the callback interface
+        try {
+            // Instantiate the NoticeDialogListener so we can send events to the host
+            listener = context as NoticeDialogListener
+        } catch (e: ClassCastException) {
+            // The activity doesn't implement the interface, throw exception
+            throw ClassCastException((context.toString() +
+                    " must implement NoticeDialogListener"))
         }
     }
 }
